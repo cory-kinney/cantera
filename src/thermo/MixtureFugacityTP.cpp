@@ -724,6 +724,18 @@ doublereal MixtureFugacityTP::calculatePsat(doublereal TKelvin, doublereal& mola
     return pres;
 }
 
+double MixtureFugacityTP::isothermalCompressibility() const
+{
+    updatePressureDerivatives();
+    return -1 / (molarVolume() * m_dpdV);
+}
+
+double MixtureFugacityTP::thermalExpansionCoeff() const
+{
+    updatePressureDerivatives();
+    return -m_dpdT / (molarVolume() * m_dpdV);
+}
+
 doublereal MixtureFugacityTP::dpdVCalc(doublereal TKelvin, doublereal molarVol, doublereal& presCalc) const
 {
     throw NotImplementedError("MixtureFugacityTP::dpdVCalc");

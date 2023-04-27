@@ -487,6 +487,22 @@ public:
     //! current state
     void updatePressureDerivatives() const;
 
+    //! Returns the isothermal compressibility (\f$\beta_T\f$). Units: 1/Pa.
+    /*!
+     *  \f[ 
+     *    \beta_T = -\frac{1}{v} \left(\frac{\partial v}{\partial p}\right)_T
+     *  \f]
+     */
+    virtual double isothermalCompressibility() const;
+
+    //! Return the volumetric thermal expansion coefficient (\f$\alpha_V\f$). Units: 1/K.
+    /*!
+     *  \f[ 
+     *    \alpha_V = \frac{1}{v} \left(\frac{\partial v}{\partial T}\right)_p
+     *  \f]
+     */
+    virtual double thermalExpansionCoeff() const;
+
 protected:
     //! The derivative of the pressure with respect to the volume
     /*!
