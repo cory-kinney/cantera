@@ -102,7 +102,7 @@ double PengRobinson::cp_mole() const
     double mv = molarVolume();
     double vpb = mv + (1 + Sqrt2) * m_b;
     double vmb = mv + (1 - Sqrt2) * m_b;
-    calculatePressureDerivatives();
+    updatePressureDerivatives();
     double cpref = GasConstant * mean_X(m_cp0_R);
     double dHdT_V = cpref + mv * m_dpdT - GasConstant
                     + 1.0 / (2.0 * Sqrt2 * m_b) * log(vpb / vmb) * T * d2aAlpha_dT2();
@@ -113,7 +113,7 @@ double PengRobinson::cv_mole() const
 {
     _updateReferenceStateThermo();
     double T = temperature();
-    calculatePressureDerivatives();
+    updatePressureDerivatives();
     return (cp_mole() + T * m_dpdT * m_dpdT / m_dpdV);
 }
 
@@ -236,7 +236,7 @@ void PengRobinson::getPartialMolarEnthalpies(double* hbar) const
     }
 
     double fac = T * daAlphadT - m_aAlpha_mix;
-    calculatePressureDerivatives();
+    updatePressureDerivatives();
     double fac2 = mv + T * m_dpdT / m_dpdV;
     double fac3 = 2 * Sqrt2 * m_b * m_b;
     double fac4 = 0;
@@ -624,16 +624,12 @@ double PengRobinson::dpdVCalc(double T, double molarVol, double& presCalc) const
     return -GasConstant * T / (vmb * vmb) + 2 * m_aAlpha_mix * vpb / (denom*denom);
 }
 
-void PengRobinson::calculatePressureDerivatives() const
+double PengRobinson::dpdTCalc() const
 {
-    double T = temperature();
     double mv = molarVolume();
-    double pres;
-
-    m_dpdV = dpdVCalc(T, mv, pres);
     double vmb = mv - m_b;
     double denom = mv * mv + 2 * mv * m_b - m_b * m_b;
-    m_dpdT = (GasConstant / vmb - daAlpha_dT() / denom);
+    return (GasConstant / vmb - daAlpha_dT() / denom);
 }
 
 void PengRobinson::updateMixingExpressions()

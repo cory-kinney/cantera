@@ -483,7 +483,25 @@ public:
     virtual doublereal satPressure(doublereal TKelvin);
     virtual void getActivityConcentrations(double* c) const;
 
+    //! Update the internally stored values of \f$dp/dV\f$ and \f$dp/dT\f$ for the 
+    //! current state
+    void updatePressureDerivatives() const;
+
 protected:
+    //! The derivative of the pressure with respect to the volume
+    /*!
+     * Calculated at the current conditions. temperature and mole number kept
+     * constant
+     */
+    mutable double m_dpdV = 0.0;
+
+    //! The derivative of the pressure with respect to the temperature
+    /*!
+     *  Calculated at the current conditions. Total volume and mole number kept
+     *  constant
+     */
+    mutable double m_dpdT = 0.0;
+
     //! Calculate the pressure and the pressure derivative given the temperature
     //! and the molar volume
     /*!
@@ -495,6 +513,14 @@ protected:
      * @returns the derivative of the pressure wrt the molar volume
      */
     virtual doublereal dpdVCalc(doublereal TKelvin, doublereal molarVol, doublereal& presCalc) const;
+
+    //! Calculate the derivative of the pressure wrt temperature at the current state
+    /*!
+     *  Molar volume and mole number are held constant
+     *
+     * @returns the derivative of the pressure wrt temperature
+     */
+    virtual doublereal dpdTCalc() const;
 
     virtual void updateMixingExpressions();
 

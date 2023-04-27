@@ -173,12 +173,7 @@ public:
     virtual doublereal densSpinodalLiquid() const;
     virtual doublereal densSpinodalGas() const;
     virtual doublereal dpdVCalc(doublereal TKelvin, doublereal molarVol, doublereal& presCalc) const;
-
-    //! Calculate dpdV and dpdT at the current conditions
-    /*!
-     *  These are stored internally.
-     */
-    void pressureDerivatives() const;
+    virtual doublereal dpdTCalc() const;
 
     //! Update the a and b parameters
     /*!
@@ -249,20 +244,6 @@ protected:
 
     // Partial molar volumes of the species
     mutable vector_fp m_partialMolarVolumes;
-
-    //! The derivative of the pressure wrt the volume
-    /*!
-     * Calculated at the current conditions. temperature and mole number kept
-     * constant
-     */
-    mutable double dpdV_ = 0.0;
-
-    //! The derivative of the pressure wrt the temperature
-    /*!
-     *  Calculated at the current conditions. Total volume and mole number kept
-     *  constant
-     */
-    mutable double dpdT_ = 0.0;
 
     //! Vector of derivatives of pressure wrt mole number
     /*!

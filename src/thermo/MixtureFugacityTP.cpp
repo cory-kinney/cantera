@@ -729,6 +729,21 @@ doublereal MixtureFugacityTP::dpdVCalc(doublereal TKelvin, doublereal molarVol, 
     throw NotImplementedError("MixtureFugacityTP::dpdVCalc");
 }
 
+doublereal MixtureFugacityTP::dpdTCalc() const
+{
+    throw NotImplementedError("MixtureFugacityTP::dpdTCalc");
+}
+
+void MixtureFugacityTP::updatePressureDerivatives() const
+{
+    double T = temperature();
+    double mv = molarVolume();
+    double pres;
+
+    m_dpdV = dpdVCalc(T, mv, pres);
+    m_dpdT = dpdTCalc();
+}
+
 void MixtureFugacityTP::_updateReferenceStateThermo() const
 {
     double Tnow = temperature();

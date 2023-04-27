@@ -103,13 +103,13 @@ doublereal RedlichKwongMFTP::cp_mole() const
     doublereal sqt = sqrt(TKelvin);
     doublereal mv = molarVolume();
     doublereal vpb = mv + m_b_current;
-    pressureDerivatives();
+    updatePressureDerivatives();
     doublereal cpref = GasConstant * mean_X(m_cp0_R);
     doublereal dadt = da_dt();
     doublereal fac = TKelvin * dadt - 3.0 * m_a_current / 2.0;
-    doublereal dHdT_V = (cpref + mv * dpdT_ - GasConstant - 1.0 / (2.0 * m_b_current * TKelvin * sqt) * log(vpb/mv) * fac
+    doublereal dHdT_V = (cpref + mv * m_dpdT - GasConstant - 1.0 / (2.0 * m_b_current * TKelvin * sqt) * log(vpb/mv) * fac
                          +1.0/(m_b_current * sqt) * log(vpb/mv) * (-0.5 * dadt));
-    return dHdT_V - (mv + TKelvin * dpdT_ / dpdV_) * dpdT_;
+    return dHdT_V - (mv + TKelvin * m_dpdT / m_dpdV) * m_dpdT;
 }
 
 doublereal RedlichKwongMFTP::cv_mole() const
@@ -253,8 +253,8 @@ void RedlichKwongMFTP::getPartialMolarEnthalpies(doublereal* hbar) const
         }
     }
 
-    pressureDerivatives();
-    doublereal fac2 = mv + TKelvin * dpdT_ / dpdV_;
+    updatePressureDerivatives();
+    doublereal fac2 = mv + TKelvin * m_dpdT / m_dpdV;
     for (size_t k = 0; k < m_kk; k++) {
         double hE_v = (mv * dpdni_[k] - RT() - b_vec_Curr_[k]/ (m_b_current * m_b_current * sqt) * log(vpb/mv)*fac
                        + 1.0 / (m_b_current * sqt) * log(vpb/mv) * m_tmpV[k]
@@ -308,10 +308,10 @@ void RedlichKwongMFTP::getPartialMolarEntropies(doublereal* sbar) const
                   );
     }
 
-    pressureDerivatives();
+    updatePressureDerivatives();
     getPartialMolarVolumes(m_partialMolarVolumes.data());
     for (size_t k = 0; k < m_kk; k++) {
-        sbar[k] -= -m_partialMolarVolumes[k] * dpdT_;
+        sbar[k] -= -m_partialMolarVolumes[k] * m_dpdT;
     }
 }
 
@@ -700,19 +700,17 @@ doublereal RedlichKwongMFTP::dpdVCalc(doublereal TKelvin, doublereal molarVol, d
     return dpdv;
 }
 
-void RedlichKwongMFTP::pressureDerivatives() const
+double RedlichKwongMFTP::dpdTCalc() const
 {
     doublereal TKelvin = temperature();
     doublereal mv = molarVolume();
-    doublereal pres;
 
-    dpdV_ = dpdVCalc(TKelvin, mv, pres);
     doublereal sqt = sqrt(TKelvin);
     doublereal vpb = mv + m_b_current;
     doublereal vmb = mv - m_b_current;
     doublereal dadt = da_dt();
     doublereal fac = dadt - m_a_current/(2.0 * TKelvin);
-    dpdT_ = (GasConstant / vmb - fac / (sqt * mv * vpb));
+    return (GasConstant / vmb - fac / (sqt * mv * vpb));
 }
 
 void RedlichKwongMFTP::updateMixingExpressions()

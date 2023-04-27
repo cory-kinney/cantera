@@ -188,6 +188,7 @@ protected:
     virtual double densSpinodalLiquid() const;
     virtual double densSpinodalGas() const;
     virtual double dpdVCalc(double T, double molarVol, double& presCalc) const;
+    virtual double dpdTCalc() const;
 
     // Special functions not inherited from MixtureFugacityTP
 
@@ -204,12 +205,6 @@ protected:
     double d2aAlpha_dT2() const;
 
 public:
-
-    //! Calculate \f$dp/dV\f$ and \f$dp/dT\f$ at the current conditions
-    /*!
-     *  These are stored internally.
-     */
-    void calculatePressureDerivatives() const;
 
     //! Update the \f$a\f$, \f$b\f$, and \f$\alpha\f$ parameters
     /*!
@@ -280,20 +275,6 @@ protected:
 
     // Partial molar volumes of the species
     mutable vector_fp m_partialMolarVolumes;
-
-    //! The derivative of the pressure with respect to the volume
-    /*!
-     * Calculated at the current conditions. temperature and mole number kept
-     * constant
-     */
-    mutable double m_dpdV = 0.0;
-
-    //! The derivative of the pressure with respect to the temperature
-    /*!
-     *  Calculated at the current conditions. Total volume and mole number kept
-     *  constant
-     */
-    mutable double m_dpdT = 0.0;
 
     //! Vector of derivatives of pressure with respect to mole number
     /*!
